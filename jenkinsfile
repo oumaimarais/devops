@@ -20,7 +20,16 @@ pipeline {
                                 sh "mvn test -Dtest=tn.esprit.tpfoyer.TpFoyerApplicationTests"
                               }
                             }
+         stage('SonarQube') {
+                             steps {
 
+
+                                 withCredentials([string(credentialsId: 'scanner', variable: 'SONAR_TOKEN')]) {
+                                     sh "mvn admin:22535005Ouma@ -Dsonar.login=$SONAR_TOKEN"
+
+                                  }
+                             }
+                         }
 
 
 
