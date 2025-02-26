@@ -39,6 +39,32 @@ pipeline {
 
                                                      }
                                          }
+                             stage("BUILD DOCKER IMAGE") {
+                                                              steps {
+
+
+                                                                sh 'docker build -t devops/foyer:latest .'
+                                                              }
+                                                            }
+                                            stage('docker push backend'){
+                                                              steps{
+                                                                   script{
+                                                                                 sh 'docker login -u "oumaimarais" -p "22535005ouma" docker.io'
+                                                                                 sh 'docker push devops/foyer:latest'
+
+                                                                             }
+
+                                                                     }}
+                                                                      stage('run application') {
+                                                                                                                                          steps{
+                                                                                                                                           script {
+
+
+
+                                                                                                                                              sh 'docker compose up -d'
+                                                                                                                                          }
+                                                                                                                                          }
+                                                                                                                                      }
 
 
 
