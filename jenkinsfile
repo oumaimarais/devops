@@ -5,7 +5,7 @@ pipeline {
 
         stage('Récupération du code de la branche') {
             steps {
-                git branch: 'master', url: 'https://github.com/attia12/yousef_back.git'
+                git branch: 'master', url: 'https://github.com/oumaimarais/devops.git'
             }
         }
 
@@ -14,6 +14,12 @@ pipeline {
                 sh 'mvn clean install -Dmaven.test.skip=true'
             }
         }
+         stage("MOCKITO") {
+                              steps {
+
+                                sh "mvn test -Dtest=tn.esprit.tpfoyer.TpFoyerApplicationTests"
+                              }
+                            }
 
 
 
