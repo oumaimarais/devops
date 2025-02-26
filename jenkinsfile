@@ -50,7 +50,7 @@ pipeline {
                                                               steps{
                                                                    script{
                                                                                  sh 'docker login -u "oumaimarais" -p "22535005ouma" docker.io'
-                                                                                 sh 'docker push devops/foyer:latest'
+                                                                                 sh 'docker push oumaimarais/devops/foyer:latest'
 
                                                                              }
 
