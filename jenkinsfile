@@ -43,14 +43,15 @@ pipeline {
                                                               steps {
 
 
-                                                                sh 'docker build -t oumaimarais/devops/foyer:latest .'
+                                                                sh 'docker build -t devops/foyer:latest .'
                                                               }
                                                             }
                                             stage('docker push backend'){
                                                               steps{
                                                                    script{
+                                                                    sh 'docker tag devops/foyer:latest oumaimarais/devops:latest'
                                                                                  sh 'docker login -u "oumaimarais" -p "22535005ouma" docker.io'
-                                                                                 sh 'docker push oumaimarais/devops/foyer:latest'
+                                                                                sh 'docker push oumaimarais/devops:latest'
 
                                                                              }
 
