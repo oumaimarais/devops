@@ -43,7 +43,7 @@ pipeline {
                                                               steps {
 
 
-                                                                sh 'docker build -t devops/foyer:latest .'
+                                                                sh 'docker build -t oumaimarais/devops/foyer:latest .'
                                                               }
                                                             }
                                             stage('docker push backend'){
