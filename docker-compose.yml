@@ -15,7 +15,7 @@ services:
   Foyer_Management:
     depends_on:
       - mysqldb
-    image: foyer:latest
+    image: oumaimarais/devops:latest
     ports:
       - "9100:9100"
     networks:
