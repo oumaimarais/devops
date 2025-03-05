@@ -46,8 +46,8 @@ pipeline {
         stage('docker push backend') {
             steps {
                 script {
-                    // Properly wrap image names in quotes
                     sh 'docker tag "devops/foyer:latest" "oumaimarais/devops:latest"'
+                    // Wrap docker login in the sh block
                     sh 'docker login -u "oumaimarais" -p "22535005ouma" docker.io'
                     sh 'docker push oumaimarais/devops:latest'
                 }
@@ -65,7 +65,6 @@ pipeline {
         stage('Build Frontend Docker Image') {
             steps {
                 script {
-                    // Properly wrap image names in quotes
                     sh 'docker build -t "oumaimarais/angular_devops_ui:latest" .'
                 }
             }
@@ -73,8 +72,8 @@ pipeline {
 
         stage('Push Frontend Image') {
             steps {
-                docker login -u "oumaimarais" -p "22535005ouma" docker.io
-                // Properly wrap image names in quotes
+                // Wrap docker login in the sh block
+                sh 'docker login -u "oumaimarais" -p "22535005ouma" docker.io'
                 sh 'docker tag "devops/foyer:latest" "oumaimarais/angular_devops_ui:latest"'
                 sh 'docker push "oumaimarais/angular_devops_ui:latest"'
             }
