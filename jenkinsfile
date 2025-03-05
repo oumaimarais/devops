@@ -63,7 +63,7 @@ pipeline {
         stage('Build Frontend Docker Image') {
             steps {
                 script {
-                    docker build -t oumaimarais/angular_devops_ui:latest .
+                    sh 'docker build -t oumaimarais/angular_devops_ui:latest .'
                 }
             }
         }
