@@ -14,98 +14,77 @@ pipeline {
                 sh 'mvn clean install -Dmaven.test.skip=true'
             }
         }
-         stage("MOCKITO") {
-                              steps {
 
-                                sh "mvn test -Dtest=tn.esprit.tpfoyer.TpFoyerApplicationTests"
-                              }
-                            }
-         stage('SonarQube') {
-                             steps {
+        stage("MOCKITO") {
+            steps {
+                sh "mvn test -Dtest=tn.esprit.tpfoyer.TpFoyerApplicationTests"
+            }
+        }
 
+        stage('SonarQube') {
+            steps {
+                withCredentials([string(credentialsId: 'scanner', variable: 'SONAR_TOKEN')]) {
+                    sh "mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN"
+                }
+            }
+        }
 
-                                 withCredentials([string(credentialsId: 'scanner', variable: 'SONAR_TOKEN')]) {
-                                     sh "mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN"
+        stage('Publish to Nexus') {
+            steps {
+                script {
+                    sh 'mvn deploy -DaltDeploymentRepository=deploymentRepo::default::http://192.168.33.10:8081/repository/devops/'
+                }
+            }
+        }
 
-                                  }
-                             }
-                         }
-                          stage('Publish to Nexus') {
-                                                     steps {
+        stage("BUILD DOCKER IMAGE Backend") {
+            steps {
+                sh 'docker build -t devops/foyer:latest .'
+            }
+        }
 
-                                                             script {
-                                                                 sh 'mvn deploy -DaltDeploymentRepository=deploymentRepo::default::http://192.168.33.10:8081/repository/devops/'
-                                                             }
+        stage('docker push backend') {
+            steps {
+                script {
+                    sh 'docker tag "devops/foyer:latest" "oumaimarais/devops:latest"'
+                    sh 'docker login -u "oumaimarais" -p "22535005ouma" docker.io'
+                    sh 'docker push oumaimarais/devops:latest'
+                }
+            }
+        }
 
-                                                     }
-                                         }
-                             stage("BUILD DOCKER IMAGE Backend") {
-                                                              steps {
+        stage('Checkout Frontend Code') {
+            steps {
+                script {
+                    git branch: 'frontend', url: 'https://github.com/oumaimarais/devops.git'
+                }
+            }
+        }
 
+        stage('Build Frontend Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t "oumaimarais/angular_devops_ui:latest" .'
+                }
+            }
+        }
 
-                                                                sh 'docker build -t devops/foyer:latest .'
-                                                              }
-                                                            }
-                                            stage('docker push backend'){
-                                                              steps{
-                                                                   script{
-                                                                    sh 'docker tag devops/foyer:latest oumaimarais/devops:latest'
-                                                                                 sh 'docker login -u "oumaimarais" -p "22535005ouma" docker.io'
-                                                                                sh 'docker push oumaimarais/devops:latest'
+        stage('Push Frontend Image') {
+            steps {
+                docker login -u "oumaimarais" -p "22535005ouma" docker.io
+                sh 'docker tag "devops/foyer:latest" "oumaimarais/angular_devops_ui:latest"'
+                sh 'docker push "oumaimarais/angular_devops_ui:latest"'
+            }
+        }
 
-                                                                             }
-
-                                                                     }}
-                                                                  stage('Checkout Frontend Code') {
-                                                                                                                        steps {
-
-                                                                                                                            script {
-
-                                                                                                                                git branch: 'frontend', url: 'https://github.com/oumaimarais/devops.git'
-                                                                                                                            }
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    stage('Build Frontend Docker Image') {
-                                                                                                                                steps {
-
-                                                                                                                                    script {
-
-                                                                                                                                       sh 'docker build -t oumaimarais/angular_devops_ui:latest .'
-
-                                                                                                                                    }
-                                                                                                                                }
-                                                                                                                            }
-
-                                                                                                                            stage('Push Frontend Image') {
-                                                                                                                                        steps {
-
-
-                                                                                                                                           docker login -u "oumaimarais" -p "22535005ouma" docker.io
-                                                                                                                                           docker tag devops/foyer:latest oumaimarais/angular_devops_ui:latest
-
-
-                                                                                                                                           docker push oumaimarais/angular_devops_ui:latest
-
-                                                                                                                                        }
-                                                                                                                                    }
-
-                                                                      stage('run application') {
-                                                                                                                                          steps{
-                                                                                                                                           script {
-                                                                                                                                             git branch: 'master', url: 'https://github.com/oumaimarais/devops.git'
-
-
-
-                                                                                                                                              sh 'docker compose up -d'
-                                                                                                                                          }
-                                                                                                                                          }
-                                                                                                                                      }
-
-
-
-
-
+        stage('run application') {
+            steps {
+                script {
+                    git branch: 'master', url: 'https://github.com/oumaimarais/devops.git'
+                    sh 'docker compose up -d'
+                }
+            }
+        }
 
     }
-
 }
