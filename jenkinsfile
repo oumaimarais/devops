@@ -72,9 +72,7 @@ pipeline {
 
         stage('Push Frontend Image') {
             steps {
-                // Wrap docker login in the sh block
                 sh 'docker login -u "oumaimarais" -p "22535005ouma" docker.io'
-                sh 'docker tag "devops/foyer:latest" "oumaimarais/angular_devops_ui:latest"'
                 sh 'docker push "oumaimarais/angular_devops_ui:latest"'
             }
         }
