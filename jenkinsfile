@@ -85,6 +85,23 @@ pipeline {
                 }
             }
         }
+         // Run Prometheus container
+                stage('Run Prometheus') {
+                    steps {
+                        script {
+                            sh 'docker run -d --name prometheus -p 9090:9090 prom/prometheus'
+                        }
+                    }
+                }
+
+                // Run Grafana container
+                stage('Run Grafana') {
+                    steps {
+                        script {
+                            sh 'docker run -d --name grafana -p 3000:3000 grafana/grafana'
+                        }
+                    }
+                }
 
     }
 }
